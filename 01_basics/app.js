@@ -23,7 +23,7 @@ d3.json('data.json', function (err, data) {
     if (err) {
         console.log(err);
     }
-    // generate(data);
+    generate(data);
 });
 
 
