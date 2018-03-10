@@ -38,6 +38,12 @@ var scaleR = d3.scaleLinear()
     })])
     .range([5, 30]);
 
+var scaleA = d3.scaleSqrt()
+    .domain([0, d3.max(data, function(d) {
+      return d[1];
+    })])
+    .range([5, 25]);
+
 // Create Circles
 svg.selectAll('circle')
     .data(data)
@@ -50,7 +56,7 @@ svg.selectAll('circle')
       return scaleY(d[1]);
     })
     .attr('r', function(d) {
-      return scaleR(d[1]);
+      return scaleA(d[1]);
     })
     .attr('fill', '#d1da51');
 
