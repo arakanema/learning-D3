@@ -7,19 +7,21 @@ var axisPadding = 30;
 var svg = d3.select('#chart')
     .append('svg')
     .attr('width', chartWidth)
-    .attr('height', chartHeight);
+    .attr('height', chartHeight)
+    .style('background-color', '#eee');
 
-// Create Scale
+// Scale
 var scaleX = d3.scaleBand()
     .domain(d3.range(data.length))
-    .rangeRound([axisPadding, chartWidth - axisPadding])
-    .paddingInner(0.05);
-
+    // .rangeRound([0, chartWidth])
+    .rangeRound([axisPadding, chartWidth - axisPadding / 2])
+    .paddingInner(0.1);
 var scaleY = d3.scaleLinear()
     .domain([0, d3.max(data)])
-    .range([chartHeight - axisPadding, axisPadding]);
+    // .range([chartHeight, 0]);
+    .range([chartHeight, axisPadding * 2]);
 
-// Create Axis
+// Axis
 var axisX = d3.axisBottom(scaleX);
 svg.append('g')
     .attr('class', 'axisX')
@@ -28,10 +30,10 @@ svg.append('g')
 var axisY = d3.axisLeft(scaleY);
 svg.append('g')
     .attr('class', 'axisY')
-    .attr('transform', 'translate(' + axisPadding + ', 0)')
+    .attr('transform', 'translate(' + axisPadding + ', -' + axisPadding + ')')
     .call(axisY);
 
-// Bind Data and create bars
+// Create Bars
 svg.selectAll('rect')
     .data(data)
     .enter()
@@ -40,15 +42,15 @@ svg.selectAll('rect')
       return scaleX(i);
     })
     .attr('y', function(d) {
-      return chartHeight - scaleY(d) - axisPadding;
+      return scaleY(d) - axisPadding;
     })
     .attr('width', scaleX.bandwidth())
     .attr('height', function(d) {
-      return scaleY(d);
+      return chartHeight - scaleY(d);
     })
-    .attr('fill', '#7ed123');
+    .attr('fill', 'green');
 
-// Create Labels
+// Crate Labels
 svg.append('g').selectAll('text')
     .data(data)
     .enter()
@@ -60,21 +62,30 @@ svg.append('g').selectAll('text')
       return scaleX(i) + scaleX.bandwidth() / 2;
     })
     .attr('y', function(d) {
-      return chartHeight - scaleY(d) - 15;
+      return scaleY(d) - axisPadding / 2;
     })
     .attr('class', 'labels')
     .attr('font-size', 14)
     .attr('fill', '#fff')
     .attr('text-anchor', 'middle');
 
-// Events
+// update values
 d3.select('button').on('click', function() {
+  // reverse and added new highest value
   data.reverse();
+  data[0] = Math.round(Math.random() * 40) + 3;
 
-  svg.selectAll('.axisX')
-      .call(axisX);
+  // reset domain
+  scaleY.domain([0, d3.max(data)]);
+  // remove and render axisY
+  svg.selectAll('.axisY').remove();
+  var axisY = d3.axisLeft(scaleY);
+  svg.append('g')
+      .attr('class', 'axisY')
+      .attr('transform', 'translate(' + axisPadding + ', -' + axisPadding + ')')
+      .call(axisY);
 
-  // refresh svg
+  // Render rect
   svg.selectAll('rect')
       .data(data)
       .transition()
@@ -84,13 +95,14 @@ d3.select('button').on('click', function() {
       .duration(1000)
       .ease(d3.easeElasticOut)
       .attr('y', function(d) {
-        return chartHeight - scaleY(d) - axisPadding;
+        return scaleY(d) - axisPadding;
       })
       .attr('height', function(d) {
-        return scaleY(d);
+        return chartHeight - scaleY(d);
       });
 
-  svg.selectAll('.labels')
+  // Render text
+  svg.selectAll('.labels') // ラベルクラスのみ!
       .data(data)
       .transition()
       .delay(function(d, i) {
@@ -105,7 +117,7 @@ d3.select('button').on('click', function() {
         return scaleX(i) + scaleX.bandwidth() / 2;
       })
       .attr('y', function(d) {
-        return chartHeight - scaleY(d) - 15;
+        return scaleY(d) - axisPadding / 2;
       });
 
 });
