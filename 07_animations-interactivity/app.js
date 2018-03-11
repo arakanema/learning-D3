@@ -75,25 +75,19 @@ d3.select('button').on('click', function() {
   data.reverse();
   data[0] = Math.round(Math.random() * 40) + 3;
 
-  // reset domain
-  scaleY.domain([0, d3.max(data)]);
-  // remove and render axisY
-  svg.selectAll('.axisY').remove();
-  var axisY = d3.axisLeft(scaleY);
-  svg.append('g')
-      .attr('class', 'axisY')
-      .attr('transform', 'translate(' + axisPadding + ', -' + axisPadding + ')')
+  // reset domain and render axis
+  scaleY.domain([0, d3.max(data)])
+      .range([chartHeight, axisPadding * 2]);
+  svg.selectAll('.axisY')
+      .transition()
+      .duration(1000)
       .call(axisY);
 
   // Render rect
   svg.selectAll('rect')
       .data(data)
       .transition()
-      .delay(function(d, i) {
-        return i / data.length * 1000;
-      })
       .duration(1000)
-      .ease(d3.easeElasticOut)
       .attr('y', function(d) {
         return scaleY(d) - axisPadding;
       })
@@ -105,11 +99,7 @@ d3.select('button').on('click', function() {
   svg.selectAll('.labels') // ラベルクラスのみ!
       .data(data)
       .transition()
-      .delay(function(d, i) {
-        return i / data.length * 1000;
-      })
       .duration(1000)
-      .ease(d3.easeElasticOut)
       .text(function(d) {
         return d;
       })
