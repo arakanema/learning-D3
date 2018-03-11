@@ -1,7 +1,6 @@
 var data = [6, 20, 21, 14, 2, 30, 7, 16, 25, 5, 11, 28, 10, 26, 9];
 
 // Create SVG Element
-
 var chartWidth = 800;
 var chartHeight = 400;
 var svg = d3.select('#chart')
@@ -25,18 +24,13 @@ svg.selectAll('rect')
     .enter()
     .append('rect')
     .attr('x', function(d, i) {
-      // return i * 30;
-      // return i * (chartWidth / data.length);
       return scaleX(i);
     })
     .attr('y', function(d) {
-      // return chartHeight - d * 5;
       return chartHeight - scaleY(d);
     })
-    // .attr('width', chartWidth / data.length - barPadding)
     .attr('width', scaleX.bandwidth())
     .attr('height', function(d) {
-      // return d * 5;
       return scaleY(d);
     })
     .attr('fill', '#7ed123');
@@ -50,13 +44,9 @@ svg.selectAll('text')
       return d;
     })
     .attr('x', function(d, i) {
-      // return i * 30;
-      // return i * (chartWidth / data.length) +
-      //     (chartWidth / data.length - barPadding) / 2;
       return scaleX(i) + scaleX.bandwidth() / 2;
     })
     .attr('y', function(d) {
-      // return chartHeight - (d * 5) + 15;
       return chartHeight - scaleY(d) + 16;
     })
     .attr('font-size', 14)
