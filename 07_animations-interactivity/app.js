@@ -1,121 +1,64 @@
-// var data = [
-//   [400, 200],
-//   [210, 140],
-//   [722, 300],
-//   [70, 160],
-//   [250, 50],
-//   [110, 280],
-//   [699, 225],
-//   [90, 220],
-// ];
-
-var chartWidth = 1000;
-var chartHeight = 400;
-var padding = 50;
-var data = [
-  {date: '2018-01-01', total: 30},
-  {date: '2018-01-02', total: 20},
-  {date: '2018-01-03', total: 6},
-  {date: '2018-01-04', total: 38},
-  {date: '2018-01-05', total: 30},
-  {date: '2018-01-06', total: 18},
-  {date: '2018-01-07', total: 33},
-  {date: '2018-01-08', total: 30},
-  {date: '2018-01-09', total: 33},
-  {date: '2018-01-10', total: 31},
-  {date: '2018-01-11', total: 40},
-  {date: '2018-01-12', total: 39},
-  {date: '2018-01-13', total: 53},
-  {date: '2018-01-14', total: 37},
-];
-
-var timeParse = d3.timeParse('%Y-%m-%d');
-var timeFormat = d3.timeFormat('%b %e');
-
-// Loop through each date
-data.forEach(function(value, index) {
-  data[index].date = timeParse(value.date);
-});
+var data = [6, 20, 21, 14, 2, 30, 7, 16, 25, 5, 11, 28, 10, 26, 9];
 
 // Create SVG Element
+
+var chartWidth = 800;
+var chartHeight = 400;
 var svg = d3.select('#chart')
     .append('svg')
     .attr('width', chartWidth)
     .attr('height', chartHeight);
 
-// Create Scales
-var scaleX = d3.scaleTime()
-    .domain([
-      d3.min(data, function(d) {
-        return d.date;
-      }),
-      d3.max(data, function(d) {
-        return d.date;
-      })])
-    .range([padding, chartWidth - padding * 2]);
+// Create Scale
+var scaleX = d3.scaleBand()
+    .domain(d3.range(data.length))
+    .rangeRound([0, chartWidth])
+    .paddingInner(0.05);
 
 var scaleY = d3.scaleLinear()
-    .domain([
-      0, d3.max(data, function(d) {
-        return d.total;
-      })])
-    .range([chartHeight - padding, padding]);
+    .domain([0, d3.max(data)])
+    .range([0, chartHeight]);
 
-var scaleA = d3.scaleSqrt()
-    .domain([
-      0, d3.max(data, function(d) {
-        return d.total;
-      })])
-    .range([5, 25]);
-
-// Create Axis
-var axisX = d3.axisBottom(scaleX)
-    .tickFormat(d3.timeFormat("%b"));
-// .ticks(6);
-// .tickValues();
-svg.append('g')
-    .attr('class', 'axisX')
-    .attr('transform', 'translate(0,' + (chartHeight - padding) + ')')
-    .call(axisX);
-
-var axisY = d3.axisLeft(scaleY);
-svg.append('g')
-    .attr('class', 'axisY')
-    .attr('transform', 'translate(' + padding / 2 + ', 0)')
-    .call(axisY);
-
-// Create Circles
-svg.selectAll('circle')
+// Bind Data and create bars
+svg.selectAll('rect')
     .data(data)
     .enter()
-    .append('circle')
-    .attr('cx', function(d) {
-      return scaleX(d.date);
+    .append('rect')
+    .attr('x', function(d, i) {
+      // return i * 30;
+      // return i * (chartWidth / data.length);
+      return scaleX(i);
     })
-    .attr('cy', function(d) {
-      return scaleY(d.total);
+    .attr('y', function(d) {
+      // return chartHeight - d * 5;
+      return chartHeight - scaleY(d);
     })
-    .attr('r', function(d) {
-      return scaleA(d.total);
+    // .attr('width', chartWidth / data.length - barPadding)
+    .attr('width', scaleX.bandwidth())
+    .attr('height', function(d) {
+      // return d * 5;
+      return scaleY(d);
     })
-    .attr('fill', '#d1da51');
+    .attr('fill', '#7ed123');
 
 // Create Labels
-svg.append('g').selectAll('text')
+svg.selectAll('text')
     .data(data)
     .enter()
     .append('text')
-    // .text(function(d) {
-    //   return timeFormat(d.date);
-    // })
     .text(function(d) {
-      return d.total;
+      return d;
     })
-    .attr('x', function(d) {
-      return scaleX(d.date);
+    .attr('x', function(d, i) {
+      // return i * 30;
+      // return i * (chartWidth / data.length) +
+      //     (chartWidth / data.length - barPadding) / 2;
+      return scaleX(i) + scaleX.bandwidth() / 2;
     })
     .attr('y', function(d) {
-      return scaleY(d.total);
+      // return chartHeight - (d * 5) + 15;
+      return chartHeight - scaleY(d) + 16;
     })
+    .attr('font-size', 14)
+    .attr('fill', '#fff')
     .attr('text-anchor', 'middle');
-
