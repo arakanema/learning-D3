@@ -30,7 +30,7 @@ var data = [
 ];
 
 var timeParse = d3.timeParse('%Y-%m-%d');
-var timeFormat = d3.timeFormat("%b %e");
+var timeFormat = d3.timeFormat('%b %e');
 
 // Loop through each date
 data.forEach(function(value, index) {
@@ -69,11 +69,20 @@ var scaleA = d3.scaleSqrt()
     .range([5, 25]);
 
 // Create Axis
-var axisX = d3.axisBottom(scaleX);
+var axisX = d3.axisBottom(scaleX)
+    .tickFormat(d3.timeFormat("%b"));
+// .ticks(6);
+// .tickValues();
 svg.append('g')
     .attr('class', 'axisX')
-    .attr('transform', 'translate(0,'+ (chartHeight - padding) + ')')
+    .attr('transform', 'translate(0,' + (chartHeight - padding) + ')')
     .call(axisX);
+
+var axisY = d3.axisLeft(scaleY);
+svg.append('g')
+    .attr('class', 'axisY')
+    .attr('transform', 'translate(' + padding / 2 + ', 0)')
+    .call(axisY);
 
 // Create Circles
 svg.selectAll('circle')
