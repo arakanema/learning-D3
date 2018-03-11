@@ -33,7 +33,7 @@ svg.selectAll('rect')
       // return chartHeight - d * 5;
       return chartHeight - scaleY(d);
     })
-    // .attr('width', chartWidth / data.length - barPadding)
+    // .attr('width', chartWidth / data.length - axisPadding)
     .attr('width', scaleX.bandwidth())
     .attr('height', function(d) {
       // return d * 5;
@@ -52,7 +52,7 @@ svg.selectAll('text')
     .attr('x', function(d, i) {
       // return i * 30;
       // return i * (chartWidth / data.length) +
-      //     (chartWidth / data.length - barPadding) / 2;
+      //     (chartWidth / data.length - axisPadding) / 2;
       return scaleX(i) + scaleX.bandwidth() / 2;
     })
     .attr('y', function(d) {
