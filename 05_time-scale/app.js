@@ -68,6 +68,13 @@ var scaleA = d3.scaleSqrt()
       })])
     .range([5, 25]);
 
+// Create Axis
+var axisX = d3.axisBottom(scaleX);
+svg.append('g')
+    .attr('class', 'axisX')
+    .attr('transform', 'translate(0,'+ (chartHeight - padding) + ')')
+    .call(axisX);
+
 // Create Circles
 svg.selectAll('circle')
     .data(data)
@@ -85,17 +92,21 @@ svg.selectAll('circle')
     .attr('fill', '#d1da51');
 
 // Create Labels
-svg.selectAll('text')
+svg.append('g').selectAll('text')
     .data(data)
     .enter()
     .append('text')
+    // .text(function(d) {
+    //   return timeFormat(d.date);
+    // })
     .text(function(d) {
-      return timeFormat(d.date);
+      return d.total;
     })
     .attr('x', function(d) {
       return scaleX(d.date);
     })
     .attr('y', function(d) {
       return scaleY(d.total);
-    });
+    })
+    .attr('text-anchor', 'middle');
 
