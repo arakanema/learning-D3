@@ -4,36 +4,34 @@
 *    Project 1 - Star Break Coffee
 */
 
-var margin = {left: 50, right: 20, top: 20, bottom: 50};
-var width = 600 - margin.left - margin.right;
-var height = 400 - margin.top - margin.bottom;
+var margin = { left:80, right:20, top:50, bottom:100 };
 
-var g = d3.select('#chart-area')
-    .append('svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-    .append('g')
-    .attr('translate', 'transform(' + margin.left + ','
-        + margin.top + ')');
+var width = 600 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+var g = d3.select("#chart-area")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
 // X Label
-g.append('text')
-    .attr('class', 'label xLabel')
-    .attr('x', width / 2)
-    .attr('y', height + 40)
-    .attr('font-size', '20px')
-    .attr('text-anchor', 'middle')
-    .text('Month');
+g.append("text")
+    .attr("y", height + 50)
+    .attr("x", width / 2)
+    .attr("font-size", "20px")
+    .attr("text-anchor", "middle")
+    .text("Month");
 
 // Y Label
-g.append('text')
-    .attr('class', 'label yLabel')
-    .attr('x', -(height / 2))
-    .attr('y', -(margin.right))
-    .attr('font-size', '20px')
-    .attr('transform', 'rotate(-90)')
-    .attr('text-anchor', 'middle')
-    .text('Revenue');
+g.append("text")
+    .attr("y", -60)
+    .attr("x", -(height / 2))
+    .attr("font-size", "20px")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
+    .text("Revenue");
 
 d3.json('data/revenues.json', function(err, data) {
   if (err) {
@@ -44,23 +42,16 @@ d3.json('data/revenues.json', function(err, data) {
     d.revenue = +d.revenue;
     d.profit = +d.profit;
   });
-  console.log(data);
+  // console.log(data);
 
   var x = d3.scaleBand()
-      .domain(data.map(function(d) {
-        return d.month;
-      }))
+      .domain(data.map(function(d) { return d.month }))
       .range([0, width])
-      .paddingInner(0.3)
-      .paddingOuter(0.3);
+      .padding(0.2);
 
   var y = d3.scaleLinear()
-      .domain([
-        0, d3.max(data, function(d) {
-          return d.revenue;
-        })])
-      .range([0, height]);
-  console.log(y);
+      .domain([0, d3.max(data, function(d) { return d.revenue })])
+      .range([height, 0]);
 
   var xAxisCall = d3.axisBottom(x);
   g.append('g')
@@ -68,7 +59,10 @@ d3.json('data/revenues.json', function(err, data) {
       .attr('transform', 'translate(0,' + height + ')')
       .call(xAxisCall);
 
-  var yAxisCall = d3.axisLeft(y);
+  var yAxisCall = d3.axisLeft(y)
+      .tickFormat(function(d) {
+        return '$' + d;
+      });
   g.append('g')
       .attr('class', 'y y-axis')
       .call(yAxisCall);
